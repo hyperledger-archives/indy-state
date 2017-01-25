@@ -1,6 +1,6 @@
 from rlp.utils import str_to_bytes
 
-from patricia.trie import utils
+from state.util import utils
 
 # log = get_logger('db')
 

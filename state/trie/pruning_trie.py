@@ -4,10 +4,10 @@ import copy
 import sys
 
 import rlp
-import patricia.trie.utils as utils
-from patricia.trie.fast_rlp import encode_optimized
 from rlp.utils import decode_hex, encode_hex, ascii_chr, str_to_bytes
-from patricia.trie.utils import is_string, to_string
+from state.util.utils import is_string, to_string, sha3, sha3rlp, encode_int
+
+from state.util.fast_rlp import encode_optimized
 
 rlp_encode = encode_optimized
 
@@ -50,7 +50,7 @@ NIBBLE_TERMINATOR = 16
 RECORDING = 1
 NONE = 0
 VERIFYING = -1
-ZERO_ENCODED = utils.encode_int(0)
+ZERO_ENCODED = encode_int(0)
 
 proving = False
 
@@ -188,7 +188,7 @@ def is_key_value_type(node_type):
                          NODE_TYPE_EXTENSION]
 
 BLANK_NODE = b''
-BLANK_ROOT = utils.sha3rlp(b'')
+BLANK_ROOT = sha3rlp(b'')
 DEATH_ROW_OFFSET = 2**62
 
 
@@ -261,7 +261,7 @@ class Trie:
             return BLANK_ROOT
         assert isinstance(self.root_node, list)
         val = rlp_encode(self.root_node)
-        key = utils.sha3(val)
+        key = sha3(val)
         self.spv_grabbing(self.root_node)
         return key
 
@@ -334,7 +334,7 @@ class Trie:
         if len(rlpnode) < 32 and not is_root:
             return node
 
-        hashkey = utils.sha3(rlpnode)
+        hashkey = sha3(rlpnode)
         self.db.inc_refcount(hashkey, rlpnode)
         return hashkey
 
@@ -616,7 +616,7 @@ class Trie:
         in the current trie implementation two nodes can share identical subtrees
         thus we can not safely delete nodes for now
         """
-        hashkey = utils.sha3(encoded)
+        hashkey = sha3(encoded)
         self.db.dec_refcount(hashkey)
 
     def _delete(self, node, key):
@@ -955,7 +955,7 @@ def verify_spv_proof(root, key, proof):
 
     for i, node in enumerate(proof):
         R = rlp_encode(node)
-        H = utils.sha3(R)
+        H = sha3(R)
         t.db.put(H, R)
     try:
         t.root_hash = root
@@ -969,7 +969,7 @@ def verify_spv_proof(root, key, proof):
 
 
 if __name__ == "__main__":
-    from patricia.trie import db
+    from state.db import db
 
     _db = db.DB(sys.argv[2])
 

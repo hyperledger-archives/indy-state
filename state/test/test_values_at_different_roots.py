@@ -1,8 +1,6 @@
-import patricia.trie.pruning_trie as trie
-from patricia.trie.db import EphemDB
-from patricia.trie.fast_rlp import encode_optimized as rlp_encode, \
+import state.trie.pruning_trie as trie
+from state.util.fast_rlp import encode_optimized as rlp_encode, \
     decode_optimized as rlp_decode
-from patricia.trie.refcount_db import RefcountDB
 
 
 def test_get_values_at_roots(empty_state):

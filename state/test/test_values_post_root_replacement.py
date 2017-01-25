@@ -1,7 +1,4 @@
-import patricia.trie.pruning_trie as trie
-from patricia.trie.db import EphemDB
-from patricia.trie.fast_rlp import encode_optimized as rlp_encode
-from patricia.trie.refcount_db import RefcountDB
+from state.util.fast_rlp import encode_optimized as rlp_encode
 
 
 def test_values_post_root_replacement(empty_state):

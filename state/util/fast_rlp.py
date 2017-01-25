@@ -2,8 +2,8 @@ import sys
 
 import rlp
 
-from patricia.trie.utils import int_to_big_endian, big_endian_to_int, safe_ord
-import patricia.trie.db as db
+import state.db.db as db
+from state.util.utils import int_to_big_endian, big_endian_to_int, safe_ord
 
 
 def _encode_optimized(item):
@@ -84,7 +84,7 @@ else:
 
 def main():
     import time
-    import patricia.trie.pruning_trie as trie
+    import state.trie.pruning_trie as trie
 
     def run():
         st = time.time()

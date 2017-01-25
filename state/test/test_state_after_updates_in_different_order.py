@@ -1,8 +1,5 @@
-import patricia.trie.pruning_trie as trie
-from patricia.test.helper import empty_state
-from patricia.trie.db import EphemDB
-from patricia.trie.fast_rlp import encode_optimized as rlp_encode
-from patricia.trie.refcount_db import RefcountDB
+from state.test.helper import empty_state
+from state.util.fast_rlp import encode_optimized as rlp_encode
 
 
 def test_state_after_updates_in_different_order():

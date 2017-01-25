@@ -1,9 +1,9 @@
 import sys
 
 import rlp
-from patricia.trie.db import BaseDB
 
-import patricia.trie.utils as utils
+import state.util.utils as utils
+from state.db.db import BaseDB
 
 DEATH_ROW_OFFSET = 2**62
 ZERO_ENCODED = utils.encode_int(0)

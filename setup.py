@@ -14,7 +14,7 @@ if sys.version_info < (3, 5):
 
 
 setup(
-    name='patricia',
+    name='state',
     version=__version__,
     author=__author__,
     author_email='dev@evernym.us',

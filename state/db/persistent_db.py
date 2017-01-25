@@ -1,6 +1,6 @@
 import leveldb
 
-from patricia.trie.db import BaseDB
+from state.db.db import BaseDB
 
 
 class PeristentDB(BaseDB):
