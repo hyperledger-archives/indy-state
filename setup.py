@@ -1,3 +1,4 @@
+import os
 import sys
 from setuptools import setup, find_packages, __version__
 
@@ -13,6 +14,23 @@ if sys.version_info < (3, 5):
     sys.exit(1)
 
 
+# Change to ioflo's source directory prior to running any command
+try:
+    SETUP_DIRNAME = os.path.dirname(__file__)
+except NameError:
+    # We're probably being frozen, and __file__ triggered this NameError
+    # Work around this
+    SETUP_DIRNAME = os.path.dirname(sys.argv[0])
+
+if SETUP_DIRNAME != '':
+    os.chdir(SETUP_DIRNAME)
+
+
+SETUP_DIRNAME = os.path.abspath(SETUP_DIRNAME)
+METADATA = os.path.join(SETUP_DIRNAME, 'state', '__metadata__.py')
+# Load the metadata using exec() so we don't trigger an import of ioflo.__init__
+exec(compile(open(METADATA).read(), METADATA, 'exec'))
+
 setup(
     name='state',
     version=__version__,
@@ -20,11 +38,10 @@ setup(
     author_email='dev@evernym.us',
     license=__license__,
     keywords='Byzantine Fault Tolerant Plenum',
-    packages=find_packages(exclude=['test', 'test.*', 'docs', 'docs*']) + [
-        'data', ],
+    packages=find_packages(exclude=['test', 'test.*', 'docs', 'docs*']),
     package_data={
         '': ['*.txt', '*.md', '*.rst', '*.json', '*.conf', '*.html',
-             '*.css', '*.ico', '*.png', 'LICENSE', 'LEGAL', 'plenum']},
+             '*.css', '*.ico', '*.png', 'LICENSE', 'LEGAL']},
     include_package_data=True,
     install_requires=['crypto==1.4.1', 'rlp', 'sha3', 'leveldb'],
     extras_require={

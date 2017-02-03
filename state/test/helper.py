@@ -6,5 +6,5 @@ from state.db.db import EphemDB
 
 def empty_state():
     root = trie.BLANK_ROOT
-    db1 = RefcountDB(EphemDB())
-    return trie.Trie(db1, root)
+    db = RefcountDB(EphemDB())
+    return trie.Trie(db, root)

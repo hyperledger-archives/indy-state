@@ -76,3 +76,4 @@ def test_get_values_at_roots(empty_state):
     state.root_node = oldroot1
     val = state.get('k1')
     assert rlp_decode(val) == [b'v1', ]
+

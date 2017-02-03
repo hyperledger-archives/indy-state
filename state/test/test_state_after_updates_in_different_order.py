@@ -20,3 +20,13 @@ def test_state_after_updates_in_different_order():
     print(state2.get_root_hash())
 
     assert state1.get_root_hash() == state2.get_root_hash()
+
+    key = ('k' * 40).encode()
+    state1.update(key, rlp_encode([b'v1d']))
+    print(state1.get(key))
+    key = ('k' * 32).encode()
+    state1.update(key, rlp_encode([b'v1d']))
+    print(state1.get(key))
+    key = ('k' * 35).encode()
+    state1.update(key, rlp_encode([b'v1d']))
+    print(state1.get(key))

@@ -34,3 +34,4 @@ def test_values_post_root_replacement(empty_state):
         val = state.get_at(root1, key)
         print(val)
         assert old_values[key] == val
+
