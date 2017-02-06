@@ -27,7 +27,7 @@ def test_values_post_root_replacement(empty_state):
         print(val)
 
     print("Values after replacing new root with old root")
-    state.replace_root_hash(root2, root1)
+    state.replace_root_hash(state.root_node, root1)
 
     for i in range(1, 5):
         key = 'k{}'.format(i)

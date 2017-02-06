@@ -36,11 +36,13 @@ class PeristentDB(BaseDB):
     # def __hash__(self):
     #     return utils.big_endian_to_int(str_to_bytes(self.__repr__()))
     #
-    # def inc_refcount(self, key, value):
-    #     self.put(key, value)
+
+    def inc_refcount(self, key, value):
+        self.put(key, value)
     #
-    # def dec_refcount(self, key):
-    #     pass
+
+    def dec_refcount(self, key):
+        pass
     #
     # def revert_refcount_changes(self, epoch):
     #     pass
