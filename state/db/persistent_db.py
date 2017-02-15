@@ -1,3 +1,5 @@
+import os
+
 import leveldb
 
 from state.db.db import BaseDB
@@ -5,8 +7,19 @@ from state.db.db import BaseDB
 
 class PeristentDB(BaseDB):
     def __init__(self, dbPath):
+        self.dbPath = dbPath
         self.db = leveldb.LevelDB(dbPath)
         self.kv = self.db
+
+    def close(self):
+        if os.path.isdir(self.dbPath):
+            lockFilePath = os.path.join(self.dbPath, 'LOCK')
+            if os.path.isfile(lockFilePath):
+                print('removing lock file {}'.format(lockFilePath))
+                os.remove(lockFilePath)
+        del self.db
+        del self.kv
+        self.kv = self.db = None
 
     def get(self, key: bytes) -> bytes:
         return self.db.Get(key)
