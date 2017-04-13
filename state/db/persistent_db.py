@@ -5,7 +5,7 @@ import leveldb
 from state.db.db import BaseDB
 
 
-class PeristentDB(BaseDB):
+class PersistentDB(BaseDB):
     def __init__(self, dbPath):
         self.dbPath = dbPath
         self.db = leveldb.LevelDB(dbPath)
