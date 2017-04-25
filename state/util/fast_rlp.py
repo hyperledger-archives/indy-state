@@ -1,8 +1,7 @@
 import sys
 
 import rlp
-
-import state.db.db as db
+from state.kv.kv_in_memory import KeyValueStorageInMemory
 from state.util.utils import int_to_big_endian, big_endian_to_int, safe_ord
 
 
@@ -88,7 +87,7 @@ def main():
 
     def run():
         st = time.time()
-        x = trie.Trie(db.EphemDB())
+        x = trie.Trie(KeyValueStorageInMemory())
         for i in range(10000):
             x.update(str(i), str(i**3))
         print('elapsed', time.time() - st)

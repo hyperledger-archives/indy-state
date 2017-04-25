@@ -1,3 +1,6 @@
+import os
+import string
+
 try:
     from crypto.Hash import keccak
     sha3_256 = lambda x: keccak.new(digest_bits=256, data=x).digest()
@@ -65,6 +68,11 @@ else:
 
 isnumeric = is_numeric
 
+def removeLockFiles(dbPath):
+    if os.path.isdir(dbPath):
+        lockFilePath = os.path.join(dbPath, 'LOCK')
+        if os.path.isfile(lockFilePath):
+            os.remove(lockFilePath)
 
 def mk_contract_address(sender, nonce):
     return sha3(rlp.encode([normalize_address(sender), nonce]))[12:]
@@ -79,6 +87,21 @@ def safe_ord(value):
         return value
     else:
         return ord(value)
+
+def isHex(val: str) -> bool:
+    """
+    Return whether the given str represents a hex value or not
+
+    :param val: the string to check
+    :return: whether the given str represents a hex value
+    """
+    if isinstance(val, bytes):
+        # only decodes utf-8 string
+        try:
+            val = val.decode()
+        except ValueError:
+            return False
+    return isinstance(val, str) and all(c in string.hexdigits for c in val)
 
 # decorator
 

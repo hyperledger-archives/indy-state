@@ -5,9 +5,11 @@ import sys
 
 import rlp
 from rlp.utils import decode_hex, encode_hex, ascii_chr, str_to_bytes
-from state.util.utils import is_string, to_string, sha3, sha3rlp, encode_int
-
+from state.kv.kv_in_memory import KeyValueStorageInMemory
+from state.kv.kv_store import KeyValueStorage
+from state.trie.refcount_db import RefcountDB
 from state.util.fast_rlp import encode_optimized
+from state.util.utils import is_string, to_string, sha3, sha3rlp, encode_int
 
 rlp_encode = encode_optimized
 
@@ -188,7 +190,7 @@ def is_key_value_type(node_type):
                          NODE_TYPE_EXTENSION]
 
 BLANK_NODE = b''
-BLANK_ROOT = sha3rlp(b'')
+BLANK_ROOT = sha3rlp(BLANK_NODE)
 DEATH_ROW_OFFSET = 2**62
 
 
@@ -198,13 +200,13 @@ def transient_trie_exception(*args):
 
 class Trie:
 
-    def __init__(self, db, root_hash=BLANK_ROOT, transient=False):
+    def __init__(self, kv: KeyValueStorage, root_hash=BLANK_ROOT, transient=False):
         '''it also present a dictionary like interface
 
         :param db key value database
         :root: blank or trie node in form of [key, value] or [v0,v1..v15,v]
         '''
-        self.db = db  # Pass in a database object directly
+        self.db = RefcountDB(kv)  # Pass in a database object directly
         self.transient = transient
         if self.transient:
             self.update = self.get = self.delete = transient_trie_exception
@@ -212,19 +214,6 @@ class Trie:
         self.death_row_timeout = 5000
         self.nodes_for_death_row = []
         self.journal = []
-
-    # def __init__(self, dbfile, root_hash=BLANK_ROOT):
-    #     '''it also present a dictionary like interface
-
-    #     :param dbfile: key value database
-    #     :root: blank or trie node in form of [key, value] or [v0,v1..v15,v]
-    #     '''
-    #     if isinstance(dbfile, str):
-    #         dbfile = os.path.abspath(dbfile)
-    #         self.db = DB(dbfile)
-    #     else:
-    # self.db = dbfile  # Pass in a database object directly
-    #     self.set_root_hash(root_hash)
 
     # For SPV proof production/verification purposes
     def spv_grabbing(self, node):
@@ -949,29 +938,7 @@ class Trie:
         return self._get(root_node, bin_to_nibbles(to_string(key)))
 
 
-def verify_spv_proof(root, key, proof):
-    proof.push(VERIFYING, proof)
-    t = Trie(db.EphemDB())
-
-    for i, node in enumerate(proof):
-        R = rlp_encode(node)
-        H = sha3(R)
-        t.db.put(H, R)
-    try:
-        t.root_hash = root
-        t.get(key)
-        proof.pop()
-        return True
-    except Exception as e:
-        print(e)
-        proof.pop()
-        return False
-
-
 if __name__ == "__main__":
-    from state.db import db
-
-    _db = db.DB(sys.argv[2])
 
     def encode_node(nd):
         if is_string(nd):
@@ -981,9 +948,9 @@ if __name__ == "__main__":
 
     if len(sys.argv) >= 2:
         if sys.argv[1] == 'insert':
-            t = Trie(_db, decode_hex(sys.argv[3]))
+            t = Trie(KeyValueStorageInMemory(), decode_hex(sys.argv[3]))
             t.update(sys.argv[4], sys.argv[5])
             print(encode_node(t.root_hash))
         elif sys.argv[1] == 'get':
-            t = Trie(_db, decode_hex(sys.argv[3]))
+            t = Trie(KeyValueStorageInMemory(), decode_hex(sys.argv[3]))
             print(t.get(sys.argv[4]))
