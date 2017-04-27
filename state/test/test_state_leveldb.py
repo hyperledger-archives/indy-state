@@ -11,6 +11,7 @@ i = 0
 
 #TODO: combine with in-memory tests
 
+
 @pytest.yield_fixture(scope="function")
 def state(tempdir) -> State:
     global i
@@ -19,6 +20,7 @@ def state(tempdir) -> State:
     yield state
     state.close()
 
+
 @pytest.yield_fixture(scope="function")
 def state2(tempdir) -> State:
     global i
@@ -26,6 +28,7 @@ def state2(tempdir) -> State:
         KeyValueStorageLeveldb(os.path.join(tempdir, 'kv2{}'.format(i))))
     yield state
     state.close()
+
 
 def test_set(state):
     state.set(b'k1', b'v1')
@@ -36,6 +39,7 @@ def test_set(state):
     state.commit(state.headHash)
     assert b'v2' == state.get(b'k2')
 
+
 def test_set_same_key(state):
     state.set(b'k1', b'v1')
     state.commit(state.headHash)
@@ -44,6 +48,7 @@ def test_set_same_key(state):
     state.set(b'k1', b'v2')
     state.commit(state.headHash)
     assert b'v2' == state.get(b'k1')
+
 
 def test_get(state):
     state.set(b'k1', b'v1')
@@ -63,6 +68,7 @@ def test_get(state):
     assert b'v3' == state.get(b'k1', isCommitted=False)
     assert b'v1' == state.get(b'k1', isCommitted=True)
 
+
 def test_remove_uncommitted(state):
     state.set(b'k1', b'v1')
     assert b'v1' == state.get(b'k1', isCommitted=False)
@@ -71,6 +77,7 @@ def test_remove_uncommitted(state):
     state.remove(b'k1')
     assert None == state.get(b'k1', isCommitted=False)
     assert None == state.get(b'k1', isCommitted=True)
+
 
 def test_remove_committed(state):
     state.set(b'k1', b'v1')
@@ -83,6 +90,7 @@ def test_remove_committed(state):
     assert None == state.get(b'k1', isCommitted=False)
     assert b'v1' == state.get(b'k1', isCommitted=True)
 
+
 def test_revert_to_last_committed_head(state):
     state.set(b'k1', b'v1')
     state.commit(state.headHash)
@@ -92,7 +100,8 @@ def test_revert_to_last_committed_head(state):
 
     state.revertToHead(state.committedHead)
     assert b'v1' == state.get(b'k1', isCommitted=False)
-    assert  b'v1' == state.get(b'k1', isCommitted=True)
+    assert b'v1' == state.get(b'k1', isCommitted=True)
+
 
 def test_revert_to_old_head(state):
     state.set(b'k1', b'v1')
@@ -110,9 +119,11 @@ def test_revert_to_old_head(state):
     # do not revert committed
     assert b'v3' == state.get(b'k1', isCommitted=True)
 
+
 def test_head_initially(state):
     assert BLANK_NODE == state.head
     assert BLANK_ROOT == state.headHash
+
 
 def test_state_head_after_updates(state, state2):
     state.set(b'k1', b'v1')
@@ -127,9 +138,11 @@ def test_state_head_after_updates(state, state2):
     assert state.headHash == state2.headHash
     assert state.head == state2.head
 
+
 def test_committed_head_initially(state):
     assert BLANK_NODE == state.committedHead
     assert BLANK_ROOT == state.committedHeadHash
+
 
 def test_committed_state_head_after_updates(state, state2):
     state.set(b'k1', b'v1')
@@ -145,6 +158,7 @@ def test_committed_state_head_after_updates(state, state2):
     assert state.committedHead == state2.committedHead
     assert state.committedHeadHash == state2.committedHeadHash
 
+
 def test_commit_current(state):
     state.set(b'k1', b'v1')
     state.set(b'k2', b'v2')
@@ -154,6 +168,7 @@ def test_commit_current(state):
 
     assert head == state.committedHead
     assert headHash == state.committedHeadHash
+
 
 def test_commit_multiple_times(state):
     state.set(b'k1', b'v1')
@@ -169,6 +184,7 @@ def test_commit_multiple_times(state):
     assert head == state.committedHead
     assert headHash == state.committedHeadHash
 
+
 def test_commit_to_current_head_hash(state):
     state.set(b'k1', b'v1')
     state.set(b'k2', b'v2')
@@ -179,6 +195,7 @@ def test_commit_to_current_head_hash(state):
     assert head == state.committedHead
     assert headHash == state.committedHeadHash
 
+
 def test_commit_to_old_head_hash(state):
     state.set(b'k1', b'v1')
     state.set(b'k2', b'v2')
@@ -188,6 +205,7 @@ def test_commit_to_old_head_hash(state):
     state.commit(headHash)
 
     assert headHash == state.committedHeadHash
+
 
 def test_commit_to_current_head(state):
     state.set(b'k1', b'v1')
