@@ -1,3 +1,4 @@
+from state.db.persistent_db import PersistentDB
 from state.kv.kv_in_memory import KeyValueStorageInMemory
 from state.trie.pruning_trie import BLANK_NODE, Trie
 from state.util.fast_rlp import encode_optimized as rlp_encode, \
@@ -7,7 +8,7 @@ def test_get_values_at_roots_in_memory():
     # Update key with different values but preserve root after each update
     # Check values of keys with different previous roots and check that they
     # are correct
-    trie = Trie(KeyValueStorageInMemory())
+    trie = Trie(PersistentDB(KeyValueStorageInMemory()))
 
     trie.update('k1'.encode(), rlp_encode(['v1']))
     # print state.root_hash.encode('hex')

@@ -1,5 +1,6 @@
 from binascii import unhexlify
 
+from state.db.persistent_db import PersistentDB
 from state.kv.kv_store import KeyValueStorage
 from state.state import State
 from state.trie.pruning_trie import BLANK_ROOT, Trie, BLANK_NODE, bin_to_nibbles
@@ -27,7 +28,9 @@ class PruningState(State):
         else:
             rootHash = BLANK_ROOT
             self._kv.put(self.rootHashKey, BLANK_ROOT)
-        self._trie = Trie(self._kv, rootHash)
+        self._trie = Trie(
+            PersistentDB(self._kv),
+            rootHash)
 
     @property
     def head(self):
@@ -47,12 +50,12 @@ class PruningState(State):
     def set(self, key: bytes, value: bytes):
         self._trie.update(key, rlp_encode([value]))
 
-    def get(self, key: bytes, isCommitted: bool=True):
+    def get(self, key: bytes, isCommitted: bool = True):
         if not isCommitted:
             val = self._trie.get(key)
         else:
             val = self._trie._get(self.committedHead,
-                                 bin_to_nibbles(to_string(key)))
+                                  bin_to_nibbles(to_string(key)))
         if val:
             return rlp_decode(val)[0]
 

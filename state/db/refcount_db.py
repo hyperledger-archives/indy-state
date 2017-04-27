@@ -3,6 +3,7 @@ import sys
 import rlp
 
 import state.util.utils as utils
+from state.db.db import BaseDB
 from state.kv.kv_store import KeyValueStorage
 
 DEATH_ROW_OFFSET = 2**62
@@ -10,7 +11,7 @@ ZERO_ENCODED = utils.encode_int(0)
 ONE_ENCODED = utils.encode_int(1)
 
 
-class RefcountDB:
+class RefcountDB(BaseDB):
 
     def __init__(self, keyValueStorage: KeyValueStorage):
         self._keyValueStorage = keyValueStorage

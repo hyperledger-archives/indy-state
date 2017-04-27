@@ -5,9 +5,8 @@ import sys
 
 import rlp
 from rlp.utils import decode_hex, encode_hex, ascii_chr, str_to_bytes
+from state.db.db import BaseDB
 from state.kv.kv_in_memory import KeyValueStorageInMemory
-from state.kv.kv_store import KeyValueStorage
-from state.trie.refcount_db import RefcountDB
 from state.util.fast_rlp import encode_optimized
 from state.util.utils import is_string, to_string, sha3, sha3rlp, encode_int
 
@@ -200,13 +199,13 @@ def transient_trie_exception(*args):
 
 class Trie:
 
-    def __init__(self, kv: KeyValueStorage, root_hash=BLANK_ROOT, transient=False):
+    def __init__(self, db: BaseDB, root_hash=BLANK_ROOT, transient=False):
         '''it also present a dictionary like interface
 
         :param db key value database
         :root: blank or trie node in form of [key, value] or [v0,v1..v15,v]
         '''
-        self.db = RefcountDB(kv)  # Pass in a database object directly
+        self._db = db # Pass in a database object directly
         self.transient = transient
         if self.transient:
             self.update = self.get = self.delete = transient_trie_exception
@@ -324,7 +323,7 @@ class Trie:
             return node
 
         hashkey = sha3(rlpnode)
-        self.db.inc_refcount(hashkey, rlpnode)
+        self._db.inc_refcount(hashkey, rlpnode)
         return hashkey
 
     def _decode_to_node(self, encoded):
@@ -332,7 +331,7 @@ class Trie:
             return BLANK_NODE
         if isinstance(encoded, list):
             return encoded
-        o = rlp.decode(self.db.get(encoded))
+        o = rlp.decode(self._db.get(encoded))
         self.spv_grabbing(o)
         return o
 
@@ -606,7 +605,7 @@ class Trie:
         thus we can not safely delete nodes for now
         """
         hashkey = sha3(encoded)
-        self.db.dec_refcount(hashkey)
+        self._db.dec_refcount(hashkey)
 
     def _delete(self, node, key):
         """ update item inside a node
@@ -919,7 +918,7 @@ class Trie:
     def root_hash_valid(self):
         if self.root_hash == BLANK_ROOT:
             return True
-        return self.root_hash in self.db
+        return self.root_hash in self._db
 
     def produce_spv_proof(self, key):
         proof.push(RECORDING)

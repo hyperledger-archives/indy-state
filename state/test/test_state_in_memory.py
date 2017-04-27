@@ -214,7 +214,13 @@ def test_commit_to_old_head(state):
     assert head == state.committedHead
     assert headHash == state.committedHeadHash
 
+def testStateData(state):
+    state.set(b'k1', b'v1')
+    state.set(b'k2', b'v2')
+    state.set(b'k3', b'v3')
 
+    data = {k: v for k, v in state.as_dict.items()}
+    assert data == {b'k1': b'v1', b'k2': b'v2', b'k3': b'v3'}
 
 
 
