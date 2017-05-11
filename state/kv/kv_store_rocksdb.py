@@ -63,9 +63,11 @@ class KeyValueStorageRocksdb(KeyValueStorage):
 
     def iter(self, start=None, end=None, include_value=True):
         if not include_value:
-            return self._db.iterkeys()
+            itr = self._db.iterkeys()
         else:
-            return self._db.iteritems()
+            itr = self._db.iteritems()
+        itr.seek_to_first()
+        return itr
 
     def has_key(self, key):
         if isinstance(key, str):
