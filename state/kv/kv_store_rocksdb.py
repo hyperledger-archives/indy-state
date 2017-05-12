@@ -35,7 +35,10 @@ class KeyValueStorageRocksdb(KeyValueStorage):
     def get(self, key):
         if isinstance(key, str):
             key = key.encode()
-        return self._db.get(key)
+        vv = self._db.get(key)
+        if vv is None:
+            raise KeyError
+        return vv
 
     def remove(self, key):
         if isinstance(key, str):
