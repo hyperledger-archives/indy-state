@@ -56,9 +56,9 @@ class KeyValueStorageRocksdb(KeyValueStorage):
         self._db.write(b, sync=False)
 
     def close(self):
-        removeLockFiles(self._dbPath)
         del self._db
         self._db = None
+        removeLockFiles(self._dbPath)
 
     def drop(self):
         self.close()
