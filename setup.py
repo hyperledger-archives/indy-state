@@ -32,7 +32,7 @@ METADATA = os.path.join(SETUP_DIRNAME, 'state', '__metadata__.py')
 exec(compile(open(METADATA).read(), METADATA, 'exec'))
 
 setup(
-    name='evernym-state',
+    name='evernym-state-rocksdb',
     version=__version__,
     author=__author__,
     author_email='dev@evernym.us',
@@ -43,7 +43,7 @@ setup(
         '': ['*.txt', '*.md', '*.rst', '*.json', '*.conf', '*.html',
              '*.css', '*.ico', '*.png', 'LICENSE', 'LEGAL']},
     include_package_data=True,
-    install_requires=['crypto==1.4.1', 'rlp', 'sha3', 'leveldb'],
+    install_requires=['crypto==1.4.1', 'rlp', 'sha3', 'leveldb', 'python-rocksdb'],
     extras_require={
     },
     setup_requires=['pytest-runner'],
