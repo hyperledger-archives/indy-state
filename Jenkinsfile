@@ -63,4 +63,6 @@ def testWindowsNoDocker = {
 //testAndPublish(name, [ubuntu: testUbuntu, windows: testWindows, windowsNoDocker: testWindowsNoDocker])
 
 def options = new TestAndPublishOptions()
+options.setPublishableBranches(['master', 'stable', 'rocksdb-integration'])
+options.skip([StagesEnum.PACK_RELEASE, StagesEnum.PACK_RELEASE_DEPS, StagesEnum.GITHUB_RELEASE])
 testAndPublish(name, [ubuntu: testUbuntu], true, options)
