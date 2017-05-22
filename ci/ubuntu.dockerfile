@@ -52,6 +52,7 @@ USER root
 RUN python3 setup.py install
 RUN ldconfig
 
+USER sovrin
 RUN virtualenv -p python3.5 /home/sovrin/test
 USER root
 RUN ln -sf /home/sovrin/test/bin/python /usr/local/bin/python
